@@ -92,7 +92,8 @@ int main( void )
 
 	GLuint vertexPosition_modelspaceID = glGetAttribLocation(programID, "vertexPosition_modelspace");
 	GLuint vertexUVID = glGetAttribLocation(programID, "vertexUV");
-	GLuint vertexNormal_modelspaceID = glGetAttribLocation(programID, "vertexNormal_modelspace");
+	// GLuint vertexNormal_modelspaceID = glGetAttribLocation(programID, "vertexNormal_modelspace");
+	GLuint vertexTypeID = glGetAttribLocation(programID, "vertexType");
 
 
 	// Load the texture
@@ -120,8 +121,12 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, mesh.uvs.size() * sizeof(glm::vec2), &mesh.uvs[0], GL_STATIC_DRAW);
 
-	do{
+	GLuint vTypebuffer;
+	glGenBuffers(1, &vTypebuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vTypebuffer);
+	glBufferData(GL_ARRAY_BUFFER, mesh.vertex_types.size() * sizeof(float), &mesh.vertex_types[0], GL_DYNAMIC_DRAW);
 
+	do{
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -171,11 +176,11 @@ int main( void )
 		);
 
 		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, LALALA);
+		glBindBuffer(GL_ARRAY_BUFFER, vTypebuffer);
 		glVertexAttribPointer(
 			2,                                // attribute
 			1,                                // size
-			GL_FLOAT,                         // type
+			GL_FLOAT,                           // type
 			GL_FALSE,                         // normalized?
 			0,                                // stride
 			(void*)0                          // array buffer offset
@@ -187,7 +192,7 @@ int main( void )
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
-
+		glDisableVertexAttribArray(2);
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -199,6 +204,7 @@ int main( void )
 	// Cleanup VBO and shader
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &vTypebuffer);
 	glDeleteProgram(programID);
 	glDeleteTextures(1, &Texture);
 	glDeleteVertexArrays(1, &VertexArrayID);

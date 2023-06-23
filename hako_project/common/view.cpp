@@ -109,8 +109,12 @@ public:
         }
 
         if (isLeftClickPressed) {
-            int nearestID = findNearestVertexID(xpos, ypos);
-            std::cout << "Nearest vertex ID: " << nearestID << std::endl;
+            // int nearestID = findNearestVertexID(xpos, ypos);
+            // mesh->vertex_types[nearestID] = 1;
+            std::cout<<mesh->vertex_types[5]<<std::endl;
+            // for (int i = 0; i < mesh->vertex_types.size(); i++) {
+            //     mesh->vertex_types[i] = 1;
+            // }
 
             float deltaX = static_cast<float>(previousLeftMouseX - xpos);
             float deltaY = static_cast<float>(previousLeftMouseY - ypos);

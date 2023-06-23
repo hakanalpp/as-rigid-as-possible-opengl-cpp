@@ -24,8 +24,7 @@ public:
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
 	std::vector<int> faces; // Won't be used at the moment.
-	std::vector<int> still_vertices; // Won't be used at the moment.
-	std::vector<int> dynamic_vertices; // Won't be used at the moment.
+	std::vector<float> vertex_types; // Won't be used at the moment.
 
 	Mesh(const char * filename);
 

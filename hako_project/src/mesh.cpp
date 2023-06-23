@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <iostream>
 // Include GLEW
 #include <GL/glew.h>
 
@@ -21,15 +22,6 @@ using namespace glm;
 #include <common/objloader.hpp>
 
 #include "mesh.h"
-
-// struct Mesh
-// {
-// private:
-
-// public:
-// 	std::vector<glm::vec3> vertices;
-// 	std::vector<glm::vec2> uvs;
-// 	std::vector<glm::vec3> normals; // Won't be used at the moment.
 
 Mesh::Mesh(const char * path) {
 	printf("Loading OBJ file %s...\n", path);
@@ -111,6 +103,8 @@ Mesh::Mesh(const char * path) {
 		vertices.push_back(vertex);
 		uvs     .push_back(uv);
 		normals .push_back(normal);
+		vertex_types.push_back(153.0);
+		// std::cout << vertex_types.size() << std::endl;
 	
 	}
 	fclose(file);

@@ -2,6 +2,7 @@
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
+in float lalaType;
 
 // Ouput data
 out vec3 color;
@@ -13,4 +14,8 @@ void main(){
 
 	// Output color = color of the texture at the specified UV
 	color = texture( myTextureSampler, UV ).rgb;
+
+	if (lalaType == 153.0 ) {
+		color = vec3(155.0, 0.0, 0.0);
+	}
 }
