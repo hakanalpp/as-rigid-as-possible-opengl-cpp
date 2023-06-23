@@ -45,6 +45,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/external/cmake_install.cmake")
+  include("/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/cmake_install.cmake")
 
 endif()
 

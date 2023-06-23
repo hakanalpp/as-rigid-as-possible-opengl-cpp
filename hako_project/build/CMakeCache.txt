@@ -218,6 +218,29 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 //Doxygen documentation generation tool (https://www.doxygen.nl)
 DOXYGEN_EXECUTABLE:FILEPATH=/usr/bin/doxygen
 
+//Directory under which to collect all populated content
+FETCHCONTENT_BASE_DIR:PATH=/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/_deps
+
+//Disables all attempts to download or update content and assumes
+// source dirs already exist
+FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
+
+//Enables QUIET option for all content population
+FETCHCONTENT_QUIET:BOOL=ON
+
+//When not empty, overrides where to find pre-populated content
+// for libigl
+FETCHCONTENT_SOURCE_DIR_LIBIGL:PATH=
+
+//Enables UPDATE_DISCONNECTED behavior for all content population
+FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of libigl
+FETCHCONTENT_UPDATES_DISCONNECTED_LIBIGL:BOOL=OFF
+
+//Git command line client
+GIT_EXECUTABLE:FILEPATH=/usr/bin/git
+
 //Dependencies for the target
 GLEW_1130_LIB_DEPENDS:STATIC=general;/usr/lib64/libGL.so;general;/usr/lib64/libGLU.so;general;-lGL;general;-lGLU;general;-lXrandr;general;-lXext;general;-lX11;general;-lrt;general;dl;general;/usr/lib64/librt.a;general;/usr/lib64/libm.so;general;/usr/lib64/libX11.so;general;/usr/lib64/libXrandr.so;general;/usr/lib64/libXinerama.so;general;/usr/lib64/libXi.so;general;/usr/lib64/libXcursor.so;general;/usr/lib64/libGL.so;general;dl;
 
@@ -256,6 +279,63 @@ GLFW_USE_MIR:BOOL=OFF
 
 //Use Wayland for context creation (implies EGL as well)
 GLFW_USE_WAYLAND:BOOL=OFF
+
+//Default version of Eigen used by libigl.
+LIBIGL_EIGEN_VERSION:STRING=3.3.7
+
+//Export libigl CMake targets
+LIBIGL_EXPORT_TARGETS:BOOL=OFF
+
+//Skip downloading external libraries
+LIBIGL_SKIP_DOWNLOAD:BOOL=OFF
+
+//Use libigl as static library
+LIBIGL_USE_STATIC_LIBRARY:BOOL=OFF
+
+//Disable Copyleft libraries
+LIBIGL_WITHOUT_COPYLEFT:BOOL=OFF
+
+//Use CGAL
+LIBIGL_WITH_CGAL:BOOL=OFF
+
+//Use CoMiso
+LIBIGL_WITH_COMISO:BOOL=OFF
+
+//Use Cork
+LIBIGL_WITH_CORK:BOOL=OFF
+
+//Use Embree
+LIBIGL_WITH_EMBREE:BOOL=OFF
+
+//Use Matlab
+LIBIGL_WITH_MATLAB:BOOL=OFF
+
+//Use MOSEK
+LIBIGL_WITH_MOSEK:BOOL=OFF
+
+//Use OpenGL
+LIBIGL_WITH_OPENGL:BOOL=ON
+
+//Use GLFW
+LIBIGL_WITH_OPENGL_GLFW:BOOL=ON
+
+//Use ImGui
+LIBIGL_WITH_OPENGL_GLFW_IMGUI:BOOL=OFF
+
+//Use PNG
+LIBIGL_WITH_PNG:BOOL=OFF
+
+//Use exact predicates
+LIBIGL_WITH_PREDICATES:BOOL=OFF
+
+//Use Tetgen
+LIBIGL_WITH_TETGEN:BOOL=OFF
+
+//Use Triangle
+LIBIGL_WITH_TRIANGLE:BOOL=OFF
+
+//Use XML
+LIBIGL_WITH_XML:BOOL=OFF
 
 //Takes an empty string or 64. Directory where lib will be installed:
 // lib or lib64
@@ -552,6 +632,18 @@ X11_xkbfile_INCLUDE_PATH:PATH=X11_xkbfile_INCLUDE_PATH-NOTFOUND
 //Path to a library.
 X11_xkbfile_LIB:FILEPATH=X11_xkbfile_LIB-NOTFOUND
 
+//Value Computed by CMake
+glad_BINARY_DIR:STATIC=/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad
+
+//Value Computed by CMake
+glad_IS_TOP_LEVEL:STATIC=OFF
+
+//Dependencies for the target
+glad_LIB_DEPENDS:STATIC=general;dl;
+
+//Value Computed by CMake
+glad_SOURCE_DIR:STATIC=/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/_deps/libigl-src/external/glad
+
 
 ########################
 # INTERNAL cache entries
@@ -669,7 +761,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -722,6 +814,8 @@ FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/usr/lib64/libOpenGL.so][/usr/lib6
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding X11
 FIND_PACKAGE_MESSAGE_DETAILS_X11:INTERNAL=[/usr/include][/usr/lib64/libX11.so][c ][v()]
+//ADVANCED property for variable: GIT_EXECUTABLE
+GIT_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: MATH_LIBRARY
 MATH_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_EGL_INCLUDE_DIR

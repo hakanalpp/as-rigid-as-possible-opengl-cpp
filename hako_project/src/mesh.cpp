@@ -103,7 +103,9 @@ Mesh::Mesh(const char * path) {
 		vertices.push_back(vertex);
 		uvs     .push_back(uv);
 		normals .push_back(normal);
-		vertex_types.push_back(153.0);
+		// vertex_types.push_back(i % 2 == 0 ? 0.0 : 1.0);
+		vertex_types.push_back(1.0);
+
 		// std::cout << vertex_types.size() << std::endl;
 	
 	}

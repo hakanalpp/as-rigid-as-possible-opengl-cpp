@@ -4,6 +4,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <igl/opengl/glfw/Viewer.h>
+#include <igl/readOFF.h>
+#include <igl/upsample.h>
+#include <igl/arap.h>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -73,12 +77,12 @@ int main( void )
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS); 
+	// glDepthFunc(GL_LESS); 
 
 	// Cull triangles which normal is not towards the camera
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
 
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -113,20 +117,22 @@ int main( void )
 
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(glm::vec3), &mesh.vertices[0], GL_STATIC_DRAW);
 
 	GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, mesh.uvs.size() * sizeof(glm::vec2), &mesh.uvs[0], GL_STATIC_DRAW);
 
 	GLuint vTypebuffer;
 	glGenBuffers(1, &vTypebuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vTypebuffer);
-	glBufferData(GL_ARRAY_BUFFER, mesh.vertex_types.size() * sizeof(float), &mesh.vertex_types[0], GL_DYNAMIC_DRAW);
-
+	
 	do{
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(glm::vec3), &mesh.vertices[0], GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glBufferData(GL_ARRAY_BUFFER, mesh.uvs.size() * sizeof(glm::vec2), &mesh.uvs[0], GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, vTypebuffer);
+		glBufferData(GL_ARRAY_BUFFER, mesh.vertex_types.size() * sizeof(float), &mesh.vertex_types[0], GL_DYNAMIC_DRAW);
+
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -146,10 +152,10 @@ int main( void )
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 		// Bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture);
+		// glActiveTexture(GL_TEXTURE0);
+		// glBindTexture(GL_TEXTURE_2D, Texture);
 		// Set our "myTextureSampler" sampler to use Texture Unit 0
-		glUniform1i(TextureID, 0);
+		// glUniform1i(TextureID, 0);
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
@@ -188,7 +194,7 @@ int main( void )
 
 
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, mesh.vertices.size() );
+		glDrawArrays(GL_POINTS, 0, mesh.vertices.size() );
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -211,6 +217,9 @@ int main( void )
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
+
+	igl::opengl::glfw::Viewer viewer;
+
 
 	return 0;
 }

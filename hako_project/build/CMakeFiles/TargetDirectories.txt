@@ -68,3 +68,10 @@
 /home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/external/glfw-3.1.2/docs/CMakeFiles/install.dir
 /home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/external/glfw-3.1.2/docs/CMakeFiles/install/local.dir
 /home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/external/glfw-3.1.2/docs/CMakeFiles/install/strip.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/glad.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/edit_cache.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/rebuild_cache.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/list_install_components.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/install.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/install/local.dir
+/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/glad/CMakeFiles/install/strip.dir

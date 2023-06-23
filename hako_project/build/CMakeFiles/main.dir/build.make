@@ -191,23 +191,9 @@ main: CMakeFiles/main.dir/build.make
 main: /usr/lib64/libGL.so
 main: /usr/lib64/libGLU.so
 main: external/glfw-3.1.2/src/libglfw3.a
-main: external/libGLEW_1130.a
-main: /usr/lib64/librt.a
-main: /usr/lib64/libm.so
-main: /usr/lib64/libX11.so
-main: /usr/lib64/libXrandr.so
-main: /usr/lib64/libXinerama.so
-main: /usr/lib64/libXi.so
-main: /usr/lib64/libXcursor.so
-main: /usr/lib64/librt.a
-main: /usr/lib64/libm.so
-main: /usr/lib64/libX11.so
-main: /usr/lib64/libXrandr.so
-main: /usr/lib64/libXinerama.so
-main: /usr/lib64/libXi.so
-main: /usr/lib64/libXcursor.so
+main: external/glfw-3.1.2/src/libglfw3.a
 main: /usr/lib64/libGL.so
-main: /usr/lib64/libGLU.so
+main: glad/libglad.a
 main: CMakeFiles/main.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/home/alp/Documents/TUM/SS23/3D Scanning/project/opengl-cpp/hako_project/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)

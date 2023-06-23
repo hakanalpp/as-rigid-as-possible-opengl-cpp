@@ -525,6 +525,19 @@ docs/fast:
 	$(MAKE) $(MAKESILENT) -f external/glfw-3.1.2/docs/CMakeFiles/docs.dir/build.make external/glfw-3.1.2/docs/CMakeFiles/docs.dir/build
 .PHONY : docs/fast
 
+#=============================================================================
+# Target rules for targets named glad
+
+# Build rule for target.
+glad: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 glad
+.PHONY : glad
+
+# fast build rule for target.
+glad/fast:
+	$(MAKE) $(MAKESILENT) -f glad/CMakeFiles/glad.dir/build.make glad/CMakeFiles/glad.dir/build
+.PHONY : glad/fast
+
 common/controls.o: common/controls.cpp.o
 .PHONY : common/controls.o
 
@@ -715,6 +728,7 @@ help:
 	@echo "... events"
 	@echo "... gamma"
 	@echo "... gears"
+	@echo "... glad"
 	@echo "... glfw"
 	@echo "... glfwinfo"
 	@echo "... heightmap"
