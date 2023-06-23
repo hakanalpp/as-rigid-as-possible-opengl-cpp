@@ -1,0 +1,1 @@
+/usr/lib64/ccache/cc -rdynamic CMakeFiles/threads.dir/threads.c.o CMakeFiles/threads.dir/__/deps/tinycthread.c.o -o threads  ../src/libglfw3.a -Wl,-Bstatic -lrt -Wl,-Bdynamic -lm -lX11 -lXrandr -lXinerama -lXi -lXcursor -lGL -ldl -Wl,-Bstatic -lrt -Wl,-Bdynamic -lm -lX11 -lXrandr -lXinerama -lXi -lXcursor -lGL -ldl 
