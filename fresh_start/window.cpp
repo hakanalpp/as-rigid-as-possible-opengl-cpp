@@ -29,29 +29,29 @@ void Window::onMousePressed(igl::opengl::glfw::Viewer& viewer, Scene& scene, Mes
             if (bc[i] > bc[closestVertex])
                 closestVertex = i;
 
-        // if (isShiftPressed)
-        // {
-        //     int selectedVertexIndex = mesh.F.row(fid)[closestVertex];
-        //     int indexOnVectorIfExists = -1;
-        //     for (int i = 0; i < selection.size(); i++)
-        //         if (selection[i] == selectedVertexIndex)
-        //         {
-        //             indexOnVectorIfExists = i;
-        //             break;
-        //         }
-        //     if (indexOnVectorIfExists < 0)
-        //         selection.push_back(selectedVertexIndex);   // not in selection : add it
-        //     else
-        //         selection.erase(std::next(selection.begin(), indexOnVectorIfExists));   // already in the selection : remove it
-        // }
-        // else
-        // {
-        scene.selection.clear();
-        scene.selection.push_back(mesh.F.row(fid)[closestVertex]);
-        // }
+        if (isShiftPressed)
+        {
+            int selectedVertexIndex = mesh.F.row(fid)[closestVertex];
+            int indexOnVectorIfExists = -1;
+            for (int i = 0; i < scene.selection.size(); i++)
+                if (scene.selection[i] == selectedVertexIndex)
+                {
+                    indexOnVectorIfExists = i;
+                    break;
+                }
+            if (indexOnVectorIfExists < 0)
+                scene.selection.push_back(selectedVertexIndex);   // not in selection : add it
+            else
+                scene.selection.erase(std::next(scene.selection.begin(), indexOnVectorIfExists));   // already in the selection : remove it
+        }
+        else
+        {
+            scene.selection.clear();
+            scene.selection.push_back(mesh.F.row(fid)[closestVertex]);
+        }
     }
-    // else if (isShiftPressed)
-    //     selection.clear();
+    else if (isShiftPressed)
+        scene.selection.clear();
 
     scene.displaySelectedPoints(viewer, mesh);
 }
