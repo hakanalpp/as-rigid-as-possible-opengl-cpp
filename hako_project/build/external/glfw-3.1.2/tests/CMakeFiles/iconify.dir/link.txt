@@ -1,1 +1,0 @@
-/usr/lib64/ccache/cc -rdynamic CMakeFiles/iconify.dir/iconify.c.o CMakeFiles/iconify.dir/__/deps/getopt.c.o -o iconify  ../src/libglfw3.a -Wl,-Bstatic -lrt -Wl,-Bdynamic -lm -lX11 -lXrandr -lXinerama -lXi -lXcursor -lGL -ldl 
