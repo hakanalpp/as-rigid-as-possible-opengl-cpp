@@ -1,11 +1,94 @@
 #include "mesh.h"
-//#include "ARAPSolver.h"
 
 #define eps 1e-10
 
+Mesh::Mesh()
+{
+	V = (Eigen::MatrixXd(8, 3) << 0.0, 0.0, 0.0,
+		 0.0, 0.0, 1.0,
+		 0.0, 1.0, 0.0,
+		 0.0, 1.0, 1.0,
+		 1.0, 0.0, 0.0,
+		 1.0, 0.0, 1.0,
+		 1.0, 1.0, 0.0,
+		 1.0, 1.0, 1.0)
+			.finished();
+	F = (Eigen::MatrixXi(12, 3) << 1, 7, 5,
+		 1, 3, 7,
+		 1, 4, 3,
+		 1, 2, 4,
+		 3, 8, 7,
+		 3, 4, 8,
+		 5, 7, 8,
+		 5, 8, 6,
+		 1, 5, 6,
+		 1, 6, 2,
+		 2, 6, 8,
+		 2, 8, 4)
+			.finished()
+			.array() -
+		1;
 
+	int subNb = 3;
+	for (int i = 0; i < subNb; i++)
+	{
+		Eigen::MatrixXd V_sub(V.rows(), V.cols());
+		Eigen::MatrixXi F_sub(F.rows(), F.cols());
+		igl::upsample(V, F, V_sub, F_sub);
 
-Eigen::MatrixXd Mesh::getVerticesFromIndex(const std::vector<int>& indexes) const
+		V = V_sub;
+		F = F_sub;
+	}
+
+	std::cout << "Using default mesh: Cube subdivided " << subNb << " times." << std::endl;
+
+	V = V.rowwise() - V.colwise().mean();
+
+	std::cout << V.rows() << " vertices loaded." << std::endl;
+}
+
+Mesh::Mesh(const std::string &filename)
+{
+	std::cout << "Reading input file: " << filename << std::endl;
+	igl::readOFF(filename, V, F);
+	std::cout << "Reading complete !" << std::endl;
+
+	V = V.rowwise() - V.colwise().mean();
+
+	std::cout << V.rows() << " vertices loaded." << std::endl;
+}
+
+std::vector<int> Mesh::getNonSelectedControlPointsIndex() const
+{
+	std::vector<int> selection_cp = std::vector<int>();
+	std::vector<int> all_cp = getControlPointsIndex();
+	for (const auto &i : all_cp)
+	{
+		bool notInSelection = true;
+		for (const auto &j : selectedPoints)
+			if (i == j)
+			{
+				notInSelection = false;
+				break;
+			}
+		if (notInSelection)
+			selection_cp.push_back(i);
+	}
+
+	return selection_cp;
+}
+
+std::vector<int> Mesh::getSelectedControlPointsIndex(bool invert) const
+{
+	std::vector<int> selection_cp = std::vector<int>();
+	for (const auto &i : selectedPoints)
+		if (isAControlPoint(i) ^ invert)
+			selection_cp.push_back(i);
+
+	return selection_cp;
+}
+
+Eigen::MatrixXd Mesh::getVerticesFromIndex(const std::vector<int> &indexes) const
 {
 	Eigen::MatrixXd verts = Eigen::MatrixXd::Zero(indexes.size(), 3);
 	for (int i = 0; i < verts.rows(); i++)
@@ -26,7 +109,7 @@ std::vector<int> Mesh::getControlPointsIndex() const
 {
 	std::vector<int> indexes;
 	indexes.reserve(C.size());
-	for (const auto& cp : C)
+	for (const auto &cp : C)
 		indexes.push_back(cp.vertexIndexInMesh);
 	return indexes;
 }
@@ -39,13 +122,13 @@ std::vector<int> Mesh::getControlPointsIndex() const
 // 	return cpPosition;
 // }
 
-Eigen::MatrixXd Mesh::getControlPointsWantedPositionBySelection(const std::vector<int>& selection, bool invert) const
+Eigen::MatrixXd Mesh::getControlPointsWantedPositionBySelection(const std::vector<int> &selection, bool invert) const
 {
-	std::vector<const ControlPoint*> cpToUse = std::vector<const ControlPoint*>();
-	for (const auto& cp : C)
+	std::vector<const ControlPoint *> cpToUse = std::vector<const ControlPoint *>();
+	for (const auto &cp : C)
 	{
 		bool inSelection = false;
-		for (const auto& i : selection)
+		for (const auto &i : selection)
 			if (i == cp.vertexIndexInMesh)
 			{
 				inSelection = true;
@@ -65,7 +148,7 @@ Eigen::MatrixXd Mesh::getControlPointsWantedPositionBySelection(const std::vecto
 
 bool Mesh::isAControlPoint(int vertexIndex) const
 {
-	for (const auto& cp : C)
+	for (const auto &cp : C)
 		if (cp.vertexIndexInMesh == vertexIndex)
 			return true;
 	return false;
@@ -83,7 +166,6 @@ bool Mesh::isAControlPoint(int vertexIndex) const
 // {
 // 	return C.size();
 // }
-
 
 // void Mesh::addControlPoint(int vertexIndex)
 // {
@@ -136,8 +218,6 @@ bool Mesh::isAControlPoint(int vertexIndex) const
 // 	std::cout << std::endl;
 // }
 
-
-
 // /* Find one-ring neighbors of all the vertices in V.
 //  * V : Matrix of vertices
 //  * F : Matrix of faces
@@ -169,7 +249,6 @@ bool Mesh::isAControlPoint(int vertexIndex) const
 // void Mesh::computeW()
 // {
 // 	W = Eigen::MatrixXd::Zero(V.rows(), V.rows());
-
 
 // 	for (int i = 0; i < F.rows(); i++) {
 // 		// Compute edges vectors CCW

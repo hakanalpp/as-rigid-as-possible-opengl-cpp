@@ -1,46 +1,16 @@
 #include "scene.h"
 #include "mesh.h"
 
-std::vector<int> Scene::getNonSelectedControlPointsIndex(const Mesh &mesh) const
-{
-    std::vector<int> selection_cp = std::vector<int>();
-    std::vector<int> all_cp = mesh.getControlPointsIndex();
-    for (const auto &i : all_cp)
-    {
-        bool notInSelection = true;
-        for (const auto &j : selection)
-            if (i == j)
-            {
-                notInSelection = false;
-                break;
-            }
-        if (notInSelection)
-            selection_cp.push_back(i);
-    }
-
-    return selection_cp;
-}
-
-std::vector<int> Scene::getSelectedControlPointsIndex(const Mesh &mesh, bool invert) const
-{
-    std::vector<int> selection_cp = std::vector<int>();
-    for (const auto &i : selection)
-        if (mesh.isAControlPoint(i) ^ invert)
-            selection_cp.push_back(i);
-
-    return selection_cp;
-}
-
 void Scene::displaySelectedPoints(igl::opengl::glfw::Viewer &viewer, const Mesh &mesh) const
 {
     // retrieve the control points not selected
-    Eigen::MatrixXd cpNotSelected = mesh.getVerticesFromIndex(getNonSelectedControlPointsIndex(mesh));
-    Eigen::MatrixXd cppNotSelected = mesh.getControlPointsWantedPositionBySelection(selection, true);
+    Eigen::MatrixXd cpNotSelected = mesh.getVerticesFromIndex(mesh.getNonSelectedControlPointsIndex());
+    Eigen::MatrixXd cppNotSelected = mesh.getControlPointsWantedPositionBySelection(mesh.selectedPoints, true);
     // retrieve the control points selected
-    Eigen::MatrixXd cpSelected = mesh.getVerticesFromIndex(getSelectedControlPointsIndex(mesh));
-    Eigen::MatrixXd cppSelected = mesh.getControlPointsWantedPositionBySelection(selection);
+    Eigen::MatrixXd cpSelected = mesh.getVerticesFromIndex(mesh.getSelectedControlPointsIndex());
+    Eigen::MatrixXd cppSelected = mesh.getControlPointsWantedPositionBySelection(mesh.selectedPoints);
     // retrieve the standard points selected
-    Eigen::MatrixXd notCpSelected = mesh.getVerticesFromIndex(getSelectedControlPointsIndex(mesh, true));
+    Eigen::MatrixXd notCpSelected = mesh.getVerticesFromIndex(mesh.getSelectedControlPointsIndex(true));
 
     Eigen::MatrixXd cpNotSelected_edgesVert = Eigen::MatrixXd::Zero(cpNotSelected.rows() + cppNotSelected.rows(), 3);
     cpNotSelected_edgesVert << cpNotSelected,

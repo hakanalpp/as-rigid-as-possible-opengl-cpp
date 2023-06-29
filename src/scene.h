@@ -6,13 +6,14 @@
 
 #include "mesh.h"
 
-struct Scene {
-    private:
+struct Scene
+{
+public:
+    Mesh mesh;
 
-    public:
-        Scene() {};
-        std::vector<int>	selection;
-        void displaySelectedPoints(igl::opengl::glfw::Viewer& viewer, const Mesh& mesh) const;
-        std::vector<int> getNonSelectedControlPointsIndex(const Mesh& mesh) const;
-        std::vector<int> getSelectedControlPointsIndex(const Mesh& mesh, bool invert = false) const;
+    Scene(Mesh mesh) : mesh(mesh){};
+
+    void displaySelectedPoints(igl::opengl::glfw::Viewer &viewer, const Mesh &mesh) const;
+
+private:
 };
