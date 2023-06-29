@@ -1,13 +1,7 @@
-#include <igl/unproject_onto_mesh.h>
-#include <igl/unproject_on_line.h>
-#include <igl/unproject_on_plane.h>
-#include <igl/point_mesh_squared_distance.h>
-
-#include "mesh.h"
 #include "window.h"
-#include "scene.h"
 
-void Window::launch() {
+void Window::launch()
+{
     viewer.launch();
 }
 
@@ -116,14 +110,13 @@ void Window::onKeyPressed(unsigned char key, bool isShiftPressed)
     // }
     // else if (key == 'X')
     //     setMoveDirection(Eigen::Vector3d(1, 0, 0), isShiftPressed, viewer, mesh);
-    
+
     // else if (key == 'Y')
     //     setMoveDirection(Eigen::Vector3d(0, 1, 0), isShiftPressed, viewer, mesh);
- 
+
     // else if (key == 'Z')
     //     setMoveDirection(Eigen::Vector3d(0, 0, 1), isShiftPressed, viewer, mesh);
 }
-
 
 bool Window::initializeKeyCallbacks()
 {
@@ -141,7 +134,7 @@ bool Window::initializeKeyCallbacks()
     {
         return onMouseMoved();
     };
-    viewer.callback_key_down = [this](igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)->bool
+    viewer.callback_key_down = [this](igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier) -> bool
     {
         bool removedCP = false;
         onKeyPressed(key, modifier & 0x00000001);

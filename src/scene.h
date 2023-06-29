@@ -1,9 +1,5 @@
 #pragma once
 
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/readOFF.h>
-#include <igl/upsample.h>
-
 #include "mesh.h"
 
 struct Scene

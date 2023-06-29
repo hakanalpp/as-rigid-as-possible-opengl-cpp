@@ -1,9 +1,5 @@
 #pragma once
 
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/readOFF.h>
-#include <igl/upsample.h>
-#include <iostream>
 #include "scene.h"
 #include "camera.h"
 
@@ -17,7 +13,7 @@ public:
     bool mousePressed = false;
 
     Window(Scene scene, Camera camera) : scene(scene), camera(camera)
-    {   
+    {
         viewer.data().set_mesh(scene.mesh.V, scene.mesh.F);
         viewer.data().set_face_based(true);
         initializeKeyCallbacks();

@@ -1,11 +1,4 @@
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/readOFF.h>
-#include <igl/upsample.h>
-
-#include "camera.h"
-#include "mesh.h"
 #include "window.h"
-#include "scene.h"
 
 int main(int argc, char *argv[])
 {

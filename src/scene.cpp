@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "mesh.h"
 
 void Scene::displaySelectedPoints(igl::opengl::glfw::Viewer &viewer, const Mesh &mesh) const
 {
