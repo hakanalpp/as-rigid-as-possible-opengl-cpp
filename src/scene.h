@@ -6,10 +6,11 @@ struct Scene
 {
 public:
     Mesh mesh;
+    MeshArap meshArap;
 
-    Scene(Mesh mesh) : mesh(mesh){};
+    Scene(Mesh mesh, MeshArap meshArap) : mesh(mesh), meshArap(meshArap) {
+    };
 
-    void displaySelectedPoints(igl::opengl::glfw::Viewer &viewer, const Mesh &mesh) const;
 
 private:
 };

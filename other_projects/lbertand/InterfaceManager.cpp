@@ -58,6 +58,7 @@ void InterfaceManager::displaySelectedPoints(igl::opengl::glfw::Viewer& viewer, 
     Eigen::MatrixXd cppSelected = mesh.getControlPointsWantedPositionBySelection(selection);
     // retrieve the standard points selected
     Eigen::MatrixXd notCpSelected = mesh.getVerticesFromIndex(getSelectedControlPointsIndex(mesh, true));
+    
 
 
     Eigen::MatrixXd cpNotSelected_edgesVert = Eigen::MatrixXd::Zero(cpNotSelected.rows() + cppNotSelected.rows(), 3);

@@ -1,10 +1,16 @@
 #include "window.h"
+#include "scene.h"
+#include "meshArap.h"
 
 int main(int argc, char *argv[])
 {
     Mesh mesh = argc > 1 ? Mesh(argv[1]) : Mesh();
+    MeshArap meshArap = MeshArap();
 
-    Scene scene = Scene(mesh);
+    char *filename = argv[1];
+    meshArap.loadOff(filename);
+
+    Scene scene = Scene(mesh, meshArap);
 
     Camera camera = Camera();
 

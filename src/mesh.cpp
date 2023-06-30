@@ -1,6 +1,107 @@
 #include "mesh.h"
 
-#define eps 1e-10
+void Mesh::moveControlPoints(Eigen::Vector3d moveVector)
+{
+	for (auto &cp : C)
+	{
+		if (cp.type == DYNAMIC)
+		{
+			cp.wantedVertexPosition += moveVector;
+		}
+	}
+}
+
+ControlPoint *Mesh::getControlPoint(int vertexIndex)
+{
+	for (auto &cp : C)
+		if (cp.vertexIndexInMesh == vertexIndex)
+			return &cp;
+	return nullptr;
+}
+
+void Mesh::filterControlPoints(SelectionMode selection_mode)
+{
+	std::vector<ControlPoint> newC;
+	for (auto &cp : C)
+	{
+		if (cp.type != selection_mode)
+		{
+			newC.push_back(cp);
+		}
+	}
+	C = newC;
+}
+
+void Mesh::addControlPoints(SelectionMode selection_mode)
+{
+	filterControlPoints(selection_mode);
+
+	for (int i = 0; i < selectedPoints.size(); i++)
+	{
+		ControlPoint *controlPoint = getControlPoint(selectedPoints[i]);
+		if (controlPoint != nullptr)
+		{
+			controlPoint->type = selection_mode;
+			continue;
+		}
+
+		ControlPoint cp = ControlPoint(selectedPoints[i], V.row(selectedPoints[i]), selection_mode);
+		C.push_back(cp);
+	}
+}
+
+void Mesh::addSelectedPoint(int fid, Eigen::Vector3d bc, bool kk, bool isShiftPressed)
+{
+	if (kk)
+	{
+		int closestVertex = 0;
+		for (int i = 1; i < 3; i++)
+			if (bc[i] > bc[closestVertex])
+				closestVertex = i;
+
+		if (isShiftPressed)
+		{
+			int selectedVertexIndex = F.row(fid)[closestVertex];
+			int indexOnVectorIfExists = -1;
+			for (int i = 0; i < selectedPoints.size(); i++)
+				if (selectedPoints[i] == selectedVertexIndex)
+				{
+					indexOnVectorIfExists = i;
+					break;
+				}
+			if (indexOnVectorIfExists < 0)
+				selectedPoints.push_back(selectedVertexIndex); // not in selection : add it
+			else
+				selectedPoints.erase(std::next(selectedPoints.begin(), indexOnVectorIfExists)); // already in the selection : remove it
+		}
+		else
+		{
+			selectedPoints.clear();
+			selectedPoints.push_back(F.row(fid)[closestVertex]);
+		}
+	}
+	else if (isShiftPressed)
+		selectedPoints.clear();
+}
+
+Eigen::MatrixXd Mesh::getVerticesFromIndex(const std::vector<int> &indexes) const
+{
+	Eigen::MatrixXd verts = Eigen::MatrixXd::Zero(indexes.size(), 3);
+	for (int i = 0; i < verts.rows(); i++)
+		verts.row(i) = V.row(indexes[i]);
+	return verts;
+}
+
+std::vector<int> Mesh::getControlPoints(SelectionMode selection_mode)
+{
+	std::vector<int> indexes = std::vector<int>();
+	for (int i = 0; i < C.size(); i++)
+	{
+		if (C[i].type == selection_mode)
+			indexes.push_back(C[i].vertexIndexInMesh);
+	}
+	return indexes;
+}
 
 Mesh::Mesh()
 {
@@ -58,258 +159,256 @@ Mesh::Mesh(const std::string &filename)
 	std::cout << V.rows() << " vertices loaded." << std::endl;
 }
 
-std::vector<int> Mesh::getNonSelectedControlPointsIndex() const
-{
-	std::vector<int> selection_cp = std::vector<int>();
-	std::vector<int> all_cp = getControlPointsIndex();
-	for (const auto &i : all_cp)
-	{
-		bool notInSelection = true;
-		for (const auto &j : selectedPoints)
-			if (i == j)
-			{
-				notInSelection = false;
-				break;
-			}
-		if (notInSelection)
-			selection_cp.push_back(i);
-	}
-
-	return selection_cp;
+void Mesh::algorithmToGui(MeshArap meshArap) {
+	for (int i = 0; i < meshArap.verts.size(); i++){
+        Eigen::Vector3d p = Eigen::Vector3d(meshArap.verts[i]->new_coords[0], meshArap.verts[i]->new_coords[1], meshArap.verts[i]->new_coords[2]);
+		V.row(i) = p;
+	} 
 }
 
-std::vector<int> Mesh::getSelectedControlPointsIndex(bool invert) const
-{
-	std::vector<int> selection_cp = std::vector<int>();
-	for (const auto &i : selectedPoints)
-		if (isAControlPoint(i) ^ invert)
-			selection_cp.push_back(i);
+// Onların
 
-	return selection_cp;
-}
-
-Eigen::MatrixXd Mesh::getVerticesFromIndex(const std::vector<int> &indexes) const
-{
-	Eigen::MatrixXd verts = Eigen::MatrixXd::Zero(indexes.size(), 3);
-	for (int i = 0; i < verts.rows(); i++)
-		verts.row(i) = V.row(indexes[i]);
-	return verts;
-}
-
-// std::vector<ControlPoint*> Mesh::getControlPointsW()
+// void Mesh::ARAP(int iteration_num)
 // {
-// 	std::vector<ControlPoint*> cpp = std::vector<ControlPoint*>();
-// 	cpp.reserve(C.size());
-// 	for (auto& cp : C)
-// 		cpp.push_back(&cp);
-// 	return cpp;
-// }
+// 	Eigen::MatrixXd weight = compute_weight();
+// 	Eigen::MatrixXd L = compute_L(weight);
 
-std::vector<int> Mesh::getControlPointsIndex() const
-{
-	std::vector<int> indexes;
-	indexes.reserve(C.size());
-	for (const auto &cp : C)
-		indexes.push_back(cp.vertexIndexInMesh);
-	return indexes;
-}
-
-// Eigen::MatrixXd Mesh::getControlPointsWantedPosition() const
-// {
-// 	Eigen::MatrixXd cpPosition = Eigen::MatrixXd::Zero(C.size(), 3);
-// 	for (int i = 0; i < cpPosition.rows(); i++)
-// 		cpPosition.row(i) = C[i].wantedVertexPosition;
-// 	return cpPosition;
-// }
-
-Eigen::MatrixXd Mesh::getControlPointsWantedPositionBySelection(const std::vector<int> &selection, bool invert) const
-{
-	std::vector<const ControlPoint *> cpToUse = std::vector<const ControlPoint *>();
-	for (const auto &cp : C)
-	{
-		bool inSelection = false;
-		for (const auto &i : selection)
-			if (i == cp.vertexIndexInMesh)
-			{
-				inSelection = true;
-				break;
-			}
-
-		if (inSelection ^ invert)
-			cpToUse.push_back(&cp);
-	}
-
-	Eigen::MatrixXd wantedPositions = Eigen::MatrixXd::Zero(cpToUse.size(), 3);
-	for (int i = 0; i < cpToUse.size(); i++)
-		wantedPositions.row(i) = cpToUse[i]->wantedVertexPosition;
-
-	return wantedPositions;
-}
-
-bool Mesh::isAControlPoint(int vertexIndex) const
-{
-	for (const auto &cp : C)
-		if (cp.vertexIndexInMesh == vertexIndex)
-			return true;
-	return false;
-}
-
-// ControlPoint* Mesh::getControlPoint(int vertexIndex)
-// {
-// 	for (auto& cp : C)
-// 		if (cp.vertexIndexInMesh == vertexIndex)
-// 			return &cp;
-// 	return nullptr;
-// }
-
-// int Mesh::getControlPointCount() const
-// {
-// 	return C.size();
-// }
-
-// void Mesh::addControlPoint(int vertexIndex)
-// {
-// 	if (vertexIndex < 0 || vertexIndex >= V.rows() || isAControlPoint(vertexIndex))
-// 		return;
-// 	C.push_back(ControlPoint(vertexIndex, V.row(vertexIndex)));
-// }
-
-// void Mesh::addControlPoint(int vertexIndex, Eigen::RowVector3d position)
-// {
-// 	if (vertexIndex < 0 || vertexIndex >= V.rows())
-// 		return;
-
-// 	// If already exists, change its control position to position
-// 	for (auto& cp : C)
-// 		if (cp.vertexIndexInMesh == vertexIndex)
-// 		{
-// 			cp.wantedVertexPosition = position;
-// 			return;
-// 		}
-
-// 	// Else just add it
-// 	C.push_back(ControlPoint(vertexIndex, position));
-// }
-
-// void Mesh::removeControlPoint(int vertexIndex)
-// {
-// 	if (vertexIndex < 0 || vertexIndex >= V.rows())
-// 		return;
-
-// 	int index = -1;
 // 	for (int i = 0; i < C.size(); i++)
-// 		if (C[i].vertexIndexInMesh == vertexIndex)
-// 		{
-// 			index = i;
-// 			break;
-// 		}
-
-// 	if (index != -1)
-// 		C.erase(std::next(C.begin(), index));
-// }
-
-// void Mesh::printControlPoints() const
-// {
-// 	std::cout << "Control Points:\n";
-// 	for (auto& cp : C)
 // 	{
-// 		std::cout << cp.vertexIndexInMesh << " : " << V.row(cp.vertexIndexInMesh) << " -> " << cp.wantedVertexPosition << "\n";
-// 	}
-// 	std::cout << std::endl;
-// }
+// 		for (int j = 0; j < V.size(); j++)
+// 		{
 
-// /* Find one-ring neighbors of all the vertices in V.
-//  * V : Matrix of vertices
-//  * F : Matrix of faces
-//  *
-//  * Out : Vector of list of neigbors indices, set in the mesh's N attribute
-//  */
-// void Mesh::computeN()
-// {
-// 	 N = std::vector<std::list<int>>(V.rows());
-
-// 	for (int i = 0; i < F.rows(); i++) {
-// 		for (int j = 0; j < F.cols(); j++) {
-// 			N[F(i, j)].push_back(F(i, (j + 1) % F.cols()));
-// 			N[F(i, j)].push_back(F(i, (j + 2) % F.cols()));
+// 			L(C[i].vertexIndexInMesh, j) = 0;
+// 			L(j, C[i].vertexIndexInMesh) = 0;
 // 		}
+// 		L(C[i].vertexIndexInMesh, C[i].vertexIndexInMesh) = 1;
 // 	}
 
-// 	for (int i = 0; i < V.rows(); i++) {
-// 		N[i].sort();
-// 		N[i].unique();
+// 	double prev_energy = 0;
+
+// 	for (int iteration = 0; iteration < iteration_num; iteration++)
+// 	{
+// 		std::vector<Eigen::Matrix3d> rotation_matrices;
+
+// 		for (int i = 0; i < V.size(); i++)
+// 		{
+// 			Eigen::Matrix3d covariance_matrix = compute_covariance_matrix(weight, i);
+
+// 			rotation_matrices.push_back(compute_rotation_matrix(covariance_matrix));
+// 		}
+
+// 		Eigen::MatrixXd b = compute_b(rotation_matrices, weight);
+
+// 		Eigen::MatrixXd new_deformed_verts = L.ldlt().solve(b);
+
+// 		mesh_vertices_update(new_deformed_verts);
+
+// 		double energy = compute_energy(rotation_matrices, weight);
+
+// 		// Comparison
+// 		prev_energy = energy;
+// 		std::cout << "energy: " << energy << std::endl;
 // 	}
 // }
-// /* Compute weights wij
-//  * V : Matrix of vertices
-//  * F : Matrix of faces
-//  *
-//  * Out : Weights wij = 1/2 * (cot(aij) + cot(bij)), in mesh's W attribute
-//  */
-// void Mesh::computeW()
+
+// Eigen::MatrixXd Mesh::compute_weight()
 // {
-// 	W = Eigen::MatrixXd::Zero(V.rows(), V.rows());
+// 	Eigen::MatrixXd weight = Eigen::MatrixXd::Zero(V.size(), V.size());
 
-// 	for (int i = 0; i < F.rows(); i++) {
+// 	for (int i = 0; i < F.size(); i++)
+// 	{
 // 		// Compute edges vectors CCW
-// 		Eigen::Vector3d v1 = V.row(F(i, 1)) - V.row(F(i, 0));
-// 		Eigen::Vector3d v2 = V.row(F(i, 2)) - V.row(F(i, 1));
-// 		Eigen::Vector3d v3 = V.row(F(i, 0)) - V.row(F(i, 2));
 
-// 		// Compute the angles
-// 		double a201 = acos(v1.dot(-v3) / (v1.norm() * v3.norm()));
-// 		double a012 = acos(-v1.dot(v2) / (v1.norm() * v2.norm()));
-// 		double a120 = acos(-v2.dot(v3) / (v2.norm() * v3.norm()));
+// 		int v1i = F.row(i)[0];
+// 		int v2i = F.row(i)[1];
+// 		int v3i = F.row(i)[2];
 
-// 		// Add the angles
-// 		W(F(i, 0), F(i, 1)) += cos(a120) / sin(a120);
-// 		W(F(i, 1), F(i, 0)) += cos(a120) / sin(a120);
+// 		Eigen::Vector3d v1 = V.row(v1i);
+// 		Eigen::Vector3d v2 = V.row(v2i);
+// 		Eigen::Vector3d v3 = V.row(v3i);
 
-// 		W(F(i, 1), F(i, 2)) += cos(a201) / sin(a201);
-// 		W(F(i, 2), F(i, 1)) += cos(a201) / sin(a201);
+// 		Eigen::Vector3d e1 = v2 - v1;
+// 		Eigen::Vector3d e2 = v3 - v2;
+// 		Eigen::Vector3d e3 = v1 - v3;
 
-// 		W(F(i, 2), F(i, 0)) += cos(a012) / sin(a012);
-// 		W(F(i, 0), F(i, 2)) += cos(a012) / sin(a012);
+// 		double norm1 = (e1.norm() * e3.norm());
+// 		double norm2 = (e1.norm() * e2.norm());
+// 		double norm3 = (e2.norm() * e3.norm());
+
+// 		double angle1 = acos(e1.dot(-e3) / norm1);
+// 		double angle2 = acos(-e1.dot(e2) / norm2);
+// 		double angle3 = acos(-e2.dot(e3) / norm3);
+
+// 		weight(v1i, v2i) += cos(angle3) / sin(angle3);
+// 		weight(v2i, v1i) += cos(angle3) / sin(angle3);
+
+// 		weight(v2i, v3i) += cos(angle1) / sin(angle1);
+// 		weight(v3i, v2i) += cos(angle1) / sin(angle1);
+
+// 		weight(v3i, v1i) += cos(angle2) / sin(angle2);
+// 		weight(v1i, v3i) += cos(angle2) / sin(angle2);
 // 	}
 
-// 	// Divide all the weights by 2
-// 	W = (float)1 / 2 * W;
+// 	weight = (1.0 / 2) * weight;
 
-// 	// Put small values to 0
-// 	for (int i = 0; i < W.rows(); i++) {
-// 		for (int j = 0; j < W.cols(); j++) {
-// 			if (W(i, j) < eps) {
-// 				W(i, j) = 0;
+// 	return weight;
+// }
+
+// Eigen::MatrixXd Mesh::compute_L(Eigen::MatrixXd weight)
+// {
+// 	Eigen::MatrixXd L = -weight;
+
+// 	for (int i = 0; i < V.size(); i++)
+// 	{
+// 		double weight_sum = 0;
+// 		for (int j = 0; j < V.size(); j++)
+// 		{
+// 			weight_sum += L(i, j);
+// 		}
+
+// 		L(i, i) = -weight_sum;
+// 	}
+
+// 	return L;
+// }
+
+// Eigen::Matrix3d Mesh::compute_covariance_matrix(Eigen::MatrixXd weight, int index)
+// {
+
+// 	int neighbor_size = V[index]->vertList.size();
+// 	vector<int> neighbor_vertlist = V[index]->vertList;
+
+// 	Eigen::MatrixXd diagonal = Eigen::MatrixXd::Zero(neighbor_size, neighbor_size);
+// 	Eigen::MatrixXd points = Eigen::MatrixXd::Zero(3, neighbor_size);
+// 	Eigen::MatrixXd deformed_points = Eigen::MatrixXd::Zero(3, neighbor_size);
+
+// 	for (int i = 0; i < neighbor_size; i++)
+// 	{
+// 		int neighbor_index = neighbor_vertlist[i];
+// 		diagonal(i, i) = weight(index, neighbor_index);
+
+// 		double edge_x = V[index]->coords[0] - V[neighbor_index]->coords[0];
+// 		double edge_y = V[index]->coords[1] - V[neighbor_index]->coords[1];
+// 		double edge_z = V[index]->coords[2] - V[neighbor_index]->coords[2];
+
+// 		points.block(0, i, 3, 1) = Eigen::Vector3d(edge_x, edge_y, edge_z);
+
+// 		double deformed_edge_x = V[index]->new_coords[0] - V[neighbor_index]->new_coords[0];
+// 		double deformed_edge_y = V[index]->new_coords[1] - V[neighbor_index]->new_coords[1];
+// 		double deformed_edge_z = V[index]->new_coords[2] - V[neighbor_index]->new_coords[2];
+
+// 		deformed_points.block(0, i, 3, 1) = Eigen::Vector3d(deformed_edge_x, deformed_edge_y, deformed_edge_z);
+// 	}
+
+// 	Eigen::Matrix3d s_matrix = points * diagonal * (deformed_points.transpose());
+
+// 	return s_matrix;
+// }
+
+// Eigen::Matrix3d Mesh::compute_rotation_matrix(Eigen::Matrix3d covariance_matrix)
+// {
+
+// 	JacobiSVD<Matrix3d> svd(covariance_matrix, ComputeThinU | ComputeThinV);
+
+// 	Eigen::Matrix3d rotation_matrix = svd.matrixU() * (svd.matrixV()).transpose();
+
+// 	if (rotation_matrix.determinant() == -1)
+// 	{
+// 		Eigen::Matrix3d temp_mult;
+// 		temp_mult << 1, 0, 0,
+// 			0, 1, 0,
+// 			0, 0, -1;
+// 		rotation_matrix = svd.matrixU() * temp_mult * (svd.matrixV()).transpose();
+// 	}
+
+// 	return rotation_matrix;
+// }
+
+// Eigen::MatrixXd Mesh::compute_b(vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight)
+// {
+// 	Eigen::MatrixXd b = Eigen::MatrixXd::Zero(3, V.size());
+
+// 	for (int i = 0; i < V.size(); i++)
+// 	{
+
+// 		if (V[i]->isConstraint)
+// 		{
+
+// 			Eigen::Vector3d row_b_i = Eigen::Vector3d(V[i]->target_coords[0],
+// 													  V[i]->target_coords[1],
+// 													  V[i]->target_coords[2]);
+
+// 			b.block(0, i, 3, 1) = row_b_i;
+// 			continue;
+// 		}
+
+// 		int neighbor_size = V[i]->vertList.size();
+// 		vector<int> neighbor_vertlist = V[i]->vertList;
+
+// 		Eigen::Vector3d row_b_i = Eigen::Vector3d::Zero();
+
+// 		Eigen::Vector3d p_i = Eigen::Vector3d(V[i]->coords[0], V[i]->coords[1], V[i]->coords[2]);
+
+// 		for (auto j : neighbor_vertlist)
+// 		{
+
+// 			Eigen::Vector3d p_j = Eigen::Vector3d(V[j]->coords[0], V[j]->coords[1], V[j]->coords[2]);
+// 			row_b_i += (weight(i, j) / 2) * (rotation_matrices[i] + rotation_matrices[j]) * (p_i - p_j);
+
+// 			if (V[j]->isConstraint)
+// 			{
+
+// 				Eigen::Vector3d row_b_j = weight(i, j) * Eigen::Vector3d(V[j]->target_coords[0],
+// 																		 V[j]->target_coords[1],
+// 																		 V[j]->target_coords[2]);
+
+// 				b.block(0, i, 3, 1) += row_b_j;
 // 			}
 // 		}
-// 	}
-// }
-// void Mesh::computeL()
-// {
-// 	L = -W;
 
-// 	// Add diagonal value
-// 	for (int i = 0; i < L.rows(); i++) {
-// 		L(i, i) += -L.row(i).sum();
-// 	}
-// }
-// void Mesh::computeL_W_N()
-// {
-// 	computeN();
-// 	computeW();
-// 	computeL();
-// }
-
-// Eigen::MatrixXd Mesh::getL_withCP() const
-// {
-// 	Eigen::MatrixXd _L = L;
-
-// 	for (const ControlPoint& c : C) {
-// 		int index = c.vertexIndexInMesh;
-// 		_L.row(index) = Eigen::VectorXd::Zero(_L.cols());
-// 		_L.col(index) = Eigen::VectorXd::Zero(_L.rows());
-// 		_L(index, index) = 1;
+// 		b.block(0, i, 3, 1) += row_b_i;
 // 	}
 
-// 	return _L;
+// 	return b.transpose();
+// }
+
+// double Mesh::compute_energy(vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight)
+// {
+
+// 	double energy = 0;
+
+// 	for (int i = 0; i < V.size(); i++)
+// 	{
+
+// 		int neighbor_size = V[i]->vertList.size();
+// 		vector<int> neighbor_vertlist = V[i]->vertList;
+
+// 		Eigen::Vector3d p_i = Eigen::Vector3d(V[i]->coords[0], V[i]->coords[1], V[i]->coords[2]);
+// 		Eigen::Vector3d p_i_prime = Eigen::Vector3d(V[i]->new_coords[0], V[i]->new_coords[1], V[i]->new_coords[2]);
+
+// 		for (auto j : neighbor_vertlist)
+// 		{
+// 			Eigen::Vector3d p_j = Eigen::Vector3d(V[j]->coords[0], V[j]->coords[1], V[j]->coords[2]);
+// 			Eigen::Vector3d p_j_prime = Eigen::Vector3d(V[j]->new_coords[0], V[j]->new_coords[1], V[j]->new_coords[2]);
+
+// 			energy += weight(i, j) * pow(((p_i_prime - p_j_prime) - (rotation_matrices[i] * (p_i - p_j))).norm(), 2);
+// 		}
+// 	}
+
+// 	return energy;
+// }
+
+// void Mesh::mesh_vertices_update(Eigen::MatrixXd new_deformed_verts)
+// {
+
+// 	for (int i = 0; i < V.size(); i++)
+// 	{
+
+// 		for (int j = 0; j < 3; j++)
+// 		{
+// 			// TODO
+// 			// V[i]->coords[j] = V[i]->new_coords[j];
+// 			V[i]->new_coords[j] = new_deformed_verts(i, j);
+// 		}
+// 	}
 // }

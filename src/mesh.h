@@ -4,49 +4,46 @@
 #include <igl/readOFF.h>
 #include <igl/upsample.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/unproject_on_plane.h>
+#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
+#include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include <imgui/imgui.h>
+#include <iostream>
 
 #include "ControlPoint.h"
+#include "meshArap.h"
 
+class MeshArap;
 struct Mesh
 {
-private:
-	std::vector<ControlPoint> C; // Control points, private because we absolutely want to force the user to user our setter
-	Eigen::MatrixXd L;			 // Laplacian Matrix, private because the arap wont access this matrix itself, but a modified version
-
-	void computeN();
-	void computeW();
-	void computeL();
-
 public:
 	Mesh();
 	Mesh(const std::string &filename);
 
+	std::vector<ControlPoint> C; // Control points, private because we absolutely want to force the user to user our setter
 	Eigen::MatrixXd V; // vertices positions
 	Eigen::MatrixXi F; // faces, defined by their vertices' indexes
 
-	std::vector<std::list<int>> N; // neighboors
-	Eigen::MatrixXd W;			   // weight
 	std::vector<int> selectedPoints;
 
+	void addSelectedPoint(int fid, Eigen::Vector3d bc, bool kk, bool isShiftPressed);
+	void addControlPoints(SelectionMode selection_mode);
+
 	Eigen::MatrixXd getVerticesFromIndex(const std::vector<int> &indexes) const;
-	std::vector<int> getControlPointsIndex() const;
-	Eigen::MatrixXd getControlPointsWantedPositionBySelection(const std::vector<int> &selection, bool invert = false) const;
-	bool isAControlPoint(int vertexIndex) const;
-	std::vector<int> getNonSelectedControlPointsIndex() const;
-	std::vector<int> getSelectedControlPointsIndex(bool invert = false) const;
+	std::vector<int> getControlPoints(SelectionMode selection_mode);
+	ControlPoint* getControlPoint(int vertexIndex);
+	void filterControlPoints(SelectionMode selection_mode);
+	void moveControlPoints(Eigen::Vector3d moveVector);
 
-	// const std::vector<ControlPoint>& getControlPoints() const { return C; }
-	// std::vector<ControlPoint*> getControlPointsW();
-	// Eigen::MatrixXd getControlPointsWantedPosition() const;
-	// ControlPoint* getControlPoint(int vertexIndex);		// be careful : changing C vector may change its memory location => would invalidate the pointer
-	// int getControlPointCount() const;
+    void algorithmToGui(MeshArap meshArap);
 
-	// void addControlPoint(int vertexIndex);
-	// void addControlPoint(int vertexIndex, Eigen::RowVector3d position);
-	// void removeControlPoint(int vertexIndex);
 
-	// void printControlPoints() const;
-
-	// void computeL_W_N();
-	// Eigen::MatrixXd getL_withCP() const;
+	// void ARAP(int interation_num);
+	// Eigen::MatrixXd compute_weight();
+	// Eigen::MatrixXd compute_L(Eigen::MatrixXd weight);
+	// Eigen::Matrix3d compute_covariance_matrix(Eigen::MatrixXd weight, int index);
+	// Eigen::Matrix3d compute_rotation_matrix(Eigen::Matrix3d covariance_matrix);
+	// Eigen::MatrixXd compute_b(std::vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight);
+	// double compute_energy(std::vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight);
+	// void mesh_vertices_update(Eigen::MatrixXd new_deformed_verts);
 };
