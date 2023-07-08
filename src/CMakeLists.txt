@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(opengl_cpp_hako)
+project(arap_cpp)
 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 

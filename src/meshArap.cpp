@@ -400,3 +400,67 @@ void MeshArap::ARAP(int iteration_num)
         cout << "energy: " << energy << endl;
     }
 }
+
+void MeshArap::print_off(string outfilename)
+{
+    fstream file;
+    file.open(outfilename, ios::out);
+
+    if (!file)
+    {
+
+        cout << "Error for creating output file" << endl;
+        return;
+    }
+
+    file << "OFF" << endl;
+    file << verts.size() << " " << tris.size() << " "
+         << "0" << endl;
+    for (int i = 0; i < verts.size(); i++)
+    {
+        file << verts[i]->new_coords[0] << " " << verts[i]->new_coords[1] << " " << verts[i]->new_coords[2] << endl;
+    }
+
+    for (int i = 0; i < tris.size(); i++)
+    {
+        file << "3 " << tris[i]->v1i << " " << tris[i]->v2i << " " << tris[i]->v3i << endl;
+    }
+}
+
+void MeshArap::addControlPointsVideo2(vector<int> left_foot_indexes, vector<int> right_foot_indexes, vector<tuple<double, double>> frame_offsets, int frame_number, int is_left)
+{
+    for (int i = 0; i < left_foot_indexes.size(); i++)
+    {
+        int current_index = left_foot_indexes[i];
+
+        if (is_left == 0)
+        {
+            addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1] + 0.4, verts[current_index]->coords[2] + 0.5);
+        }
+        else
+        {
+            addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1] + get<1>(frame_offsets[frame_number]), verts[current_index]->coords[2] - get<0>(frame_offsets[frame_number]));
+        }
+    }
+
+    for (int i = 0; i < right_foot_indexes.size(); i++)
+    {
+        int current_index = right_foot_indexes[i];
+        // addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1]+get<1>(frame_offsets[frame_number]), verts[current_index]->coords[2]-get<0>(frame_offsets[frame_number]));
+
+        if (is_left == 0)
+        {
+            addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1] + 0.4, verts[current_index]->coords[2] + 0.5);
+        }
+        else
+        {
+            addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1], verts[current_index]->coords[2]);
+        }
+
+        addConstraint(398, 0.019995, 0.348865 + 1, -0.06327);
+        addConstraint(746, 0.395689, 0.323604, -0.23446 - 0.3);
+        // cout<<"abc:"<<get<0>(frame_offsets[frame_number])<<endl;
+
+        // addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1], verts[current_index]->coords[2]-2);
+    }
+}

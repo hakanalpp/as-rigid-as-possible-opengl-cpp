@@ -1,14 +1,12 @@
 #pragma once
 
 #include "scene.h"
-#include "camera.h"
 
 
 struct Window
 {
 public:
     Scene scene;
-    Camera camera;
     igl::opengl::glfw::Viewer viewer;
     igl::opengl::glfw::imgui::ImGuiMenu menu;
 
@@ -17,7 +15,7 @@ public:
     bool mousePressed = false;
     bool moveMode = false;
 
-    Window(Scene scene, Camera camera) : scene(scene), camera(camera)
+    Window(Scene scene) : scene(scene)
     {
         viewer.data().set_mesh(scene.mesh.V, scene.mesh.F);
         viewer.data().set_face_based(true);

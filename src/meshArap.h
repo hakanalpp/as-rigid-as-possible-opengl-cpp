@@ -67,6 +67,7 @@ public:
     void guiToAlgorithm(std::vector<ControlPoint> controlPoints);
 
     void loadOff(char *name);
+    void print_off(string outfilename);
 
     Eigen::MatrixXd compute_weight();
     Eigen::Matrix3d compute_covariance_matrix(Eigen::MatrixXd weight, int index);
@@ -78,5 +79,6 @@ public:
     void addControlPoints();
     void ARAP(int iteration_num);
     void mesh_frame_update();
+    void addControlPointsVideo2(vector<int> left_foot_indexes, vector<int> right_foot_indexes, vector<tuple<double, double>> frame_offsets, int frame_number, int is_left);
 };
 

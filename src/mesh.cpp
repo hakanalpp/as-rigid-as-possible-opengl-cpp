@@ -103,6 +103,7 @@ std::vector<int> Mesh::getControlPoints(SelectionMode selection_mode)
 	return indexes;
 }
 
+// This is deprecated since meshArap does not work with this.
 Mesh::Mesh()
 {
 	V = (Eigen::MatrixXd(8, 3) << 0.0, 0.0, 0.0,
@@ -159,9 +160,11 @@ Mesh::Mesh(const std::string &filename)
 	std::cout << V.rows() << " vertices loaded." << std::endl;
 }
 
-void Mesh::algorithmToGui(MeshArap meshArap) {
-	for (int i = 0; i < meshArap.verts.size(); i++){
-        Eigen::Vector3d p = Eigen::Vector3d(meshArap.verts[i]->new_coords[0], meshArap.verts[i]->new_coords[1], meshArap.verts[i]->new_coords[2]);
+void Mesh::algorithmToGui(MeshArap meshArap)
+{
+	for (int i = 0; i < meshArap.verts.size(); i++)
+	{
+		Eigen::Vector3d p = Eigen::Vector3d(meshArap.verts[i]->new_coords[0], meshArap.verts[i]->new_coords[1], meshArap.verts[i]->new_coords[2]);
 		V.row(i) = p;
-	} 
+	}
 }
