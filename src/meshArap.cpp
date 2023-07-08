@@ -5,28 +5,25 @@
 
 #include "meshArap.h"
 
-void MeshArap::mesh_frame_update() {
+void MeshArap::mesh_frame_update()
+{
 
-	for(int i=0;i<verts.size();i++)
-	{
+    for (int i = 0; i < verts.size(); i++)
+    {
 
-		for(int j=0;j<3;j++)
-		{
-			//TODO 
-			verts[i]->coords[j] = verts[i]->new_coords[j];
+        for (int j = 0; j < 3; j++)
+        {
+            // TODO
+            verts[i]->coords[j] = verts[i]->new_coords[j];
 
-			//cout << mesh.verts[i]->new_coords[j] << endl;
-			//mesh.verts[i]->new_coords[j] = new_deformed_verts(i,j);
-		}
-
-	}
-
+            // cout << verts[i]->new_coords[j] << endl;
+            // verts[i]->new_coords[j] = new_deformed_verts(i,j);
+        }
+    }
 }
-
 
 Eigen::Matrix3d MeshArap::compute_covariance_matrix(Eigen::MatrixXd weight, int index)
 {
-
     int neighbor_size = verts[index]->vertList.size();
     vector<int> neighbor_vertlist = verts[index]->vertList;
 
@@ -215,7 +212,7 @@ void MeshArap::addEdge(int v1, int v2)
 }
 
 void MeshArap::guiToAlgorithm(std::vector<ControlPoint> controlPoints)
-{   
+{
     for (const auto &cp : controlPoints)
     {
         verts[cp.vertexIndexInMesh]->isConstraint = true;
@@ -224,12 +221,6 @@ void MeshArap::guiToAlgorithm(std::vector<ControlPoint> controlPoints)
         c[1] = cp.wantedVertexPosition[1];
         c[2] = cp.wantedVertexPosition[2];
         verts[cp.vertexIndexInMesh]->target_coords = c;
-        // std::cout<<"lalal: " <<verts[cp.vertexIndexInMesh]->target_coords[0]<<std::endl;
-        // *(verts[cp.vertexIndexInMesh]->target_coords) = (double)1;
-        // std::cout << "sdlşkffsd" << std::endl;
-        // verts[cp.vertexIndexInMesh]->target_coords[1] = cp.wantedVertexPosition[1];
-        // verts[cp.vertexIndexInMesh]->target_coords[2] = cp.wantedVertexPosition[2];
-        // verts[cp.vertexIndexInMesh]->target_coords = {cp.wantedVertexPosition[0], cp.wantedVertexPosition[0], cp.wantedVertexPosition[0]};
     }
 }
 
@@ -238,7 +229,7 @@ Eigen::Matrix3d MeshArap::compute_rotation_matrix(Eigen::Matrix3d covariance_mat
 
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(covariance_matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
-    Eigen::Matrix3d rotation_matrix = svd.matrixU() * (svd.matrixV()).transpose();
+    Eigen::Matrix3d rotation_matrix = svd.matrixV() * (svd.matrixU()).transpose();
 
     if (rotation_matrix.determinant() == -1)
     {
@@ -246,7 +237,7 @@ Eigen::Matrix3d MeshArap::compute_rotation_matrix(Eigen::Matrix3d covariance_mat
         temp_mult << 1, 0, 0,
             0, 1, 0,
             0, 0, -1;
-        rotation_matrix = svd.matrixU() * temp_mult * (svd.matrixV()).transpose();
+        rotation_matrix = svd.matrixV() * temp_mult * (svd.matrixU()).transpose();
     }
 
     return rotation_matrix;
@@ -320,7 +311,6 @@ Eigen::MatrixXd MeshArap::compute_b(vector<Eigen::Matrix3d> rotation_matrices, E
 
 void MeshArap::mesh_vertices_update(Eigen::MatrixXd new_deformed_verts)
 {
-
     for (int i = 0; i < verts.size(); i++)
     {
 
@@ -358,25 +348,6 @@ double MeshArap::compute_energy(vector<Eigen::Matrix3d> rotation_matrices, Eigen
     }
 
     return energy;
-}
-
-void MeshArap::addControlPoints()
-{
-
-    vector<vector<double>> controlpointarr;
-
-    controlpointarr.push_back(vector<double>{591, 1, 1, 1});
-
-    controlpointarr.push_back(vector<double>{576, 0.45819101, 0.482759, 0.0733856});
-
-    controlpointarr.push_back(vector<double>{577, 0.482759, 0.46586001, 0.0689655});
-
-    controlpointarr.push_back(vector<double>{332, 0.44827601, 0.50623697, 0.0689655});
-
-    for (int i = 0; i < controlpointarr.size(); i++)
-    {
-        addConstraint((int)controlpointarr[i][0], controlpointarr[i][1], controlpointarr[i][2], controlpointarr[i][3]);
-    }
 }
 
 void MeshArap::ARAP(int iteration_num)

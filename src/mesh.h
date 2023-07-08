@@ -20,9 +20,9 @@ public:
 	Mesh();
 	Mesh(const std::string &filename);
 
-	std::vector<ControlPoint> C; // Control points, private because we absolutely want to force the user to user our setter
-	Eigen::MatrixXd V; // vertices positions
-	Eigen::MatrixXi F; // faces, defined by their vertices' indexes
+	std::vector<ControlPoint> C;
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
 
 	std::vector<int> selectedPoints;
 
@@ -37,13 +37,4 @@ public:
 
     void algorithmToGui(MeshArap meshArap);
 
-
-	// void ARAP(int interation_num);
-	// Eigen::MatrixXd compute_weight();
-	// Eigen::MatrixXd compute_L(Eigen::MatrixXd weight);
-	// Eigen::Matrix3d compute_covariance_matrix(Eigen::MatrixXd weight, int index);
-	// Eigen::Matrix3d compute_rotation_matrix(Eigen::Matrix3d covariance_matrix);
-	// Eigen::MatrixXd compute_b(std::vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight);
-	// double compute_energy(std::vector<Eigen::Matrix3d> rotation_matrices, Eigen::MatrixXd weight);
-	// void mesh_vertices_update(Eigen::MatrixXd new_deformed_verts);
 };
