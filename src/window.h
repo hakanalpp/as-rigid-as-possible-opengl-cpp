@@ -12,6 +12,7 @@ public:
 
     SelectionMode cp_selection_mode = NONE;
 
+    Eigen::Vector2d mousePressedCoords;
     bool mousePressed = false;
     bool moveMode = false;
 
@@ -20,6 +21,7 @@ public:
         viewer.data().set_mesh(scene.mesh.V, scene.mesh.F);
         viewer.data().set_face_based(true);
         viewer.plugins.push_back(&menu);
+        viewer.core().set_rotation_type(igl::opengl::ViewerCore::ROTATION_TYPE_TRACKBALL);
         initTextPanel();
         initializeKeyCallbacks();
     };
