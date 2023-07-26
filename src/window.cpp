@@ -13,7 +13,7 @@ void Window::initTextPanel()
         ImGui::SetNextWindowPos(ImVec2(981.f * menu.menu_scaling(), 0), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSize(ImVec2(300, 160), ImGuiCond_FirstUseEver);
         ImGui::Begin(
-            "New Window", nullptr,
+            "Helper Window", nullptr,
             ImGuiWindowFlags_NoSavedSettings);
         ImGui::InputText("Control Pointer Selection Mode", SelectionModeString[cp_selection_mode]);
         ImGui::End();
@@ -68,7 +68,8 @@ void Window::onMousePressed(bool isShiftPressed)
 void Window::onMouseReleased()
 {
     // 1280x800
-    if (moveMode) {
+    if (moveMode)
+    {
         double x = viewer.current_mouse_x;
         double y = viewer.core().viewport(3) - viewer.current_mouse_y;
         Eigen::Vector2d grabbed = Eigen::Vector2d(x, y) - mousePressedCoords;
@@ -76,13 +77,13 @@ void Window::onMouseReleased()
         x = grabbed.x() / 1280.0;
         y = grabbed.y() / 800.0;
 
-        Eigen::Vector3d up = Eigen::Vector3d(0,1,0);
-        Eigen::Vector3d right = Eigen::Vector3d(5,0,0);
-         
+        Eigen::Vector3d up = Eigen::Vector3d(0, 1, 0);
+        Eigen::Vector3d right = Eigen::Vector3d(5, 0, 0);
+
         Eigen::Vector3d projPoint = right * x + up * y;
 
         projPoint.normalize();
-        scene.mesh.moveControlPoints(projPoint/5);
+        scene.mesh.moveControlPoints(projPoint / 5);
         scene.meshArap.guiToAlgorithm(scene.mesh.C);
         scene.meshArap.ARAP(10);
 
@@ -91,7 +92,7 @@ void Window::onMouseReleased()
         scene.mesh.algorithmToGui(scene.meshArap);
         viewer.data().set_mesh(scene.mesh.V, scene.mesh.F);
         displaySelectedPoints();
-        std::cout<<"move mode"<<std::endl;
+        std::cout << "move mode" << std::endl;
     }
 
     mousePressed = false;
@@ -100,7 +101,8 @@ void Window::onMouseReleased()
 
 bool Window::onMouseMoved()
 {
-    if (mousePressed && !moveMode) {
+    if (mousePressed && !moveMode)
+    {
         return false;
     }
     return true;

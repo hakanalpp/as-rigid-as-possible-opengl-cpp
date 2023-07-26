@@ -2,7 +2,6 @@
 
 #include "scene.h"
 
-
 struct Window
 {
 public:
@@ -35,5 +34,5 @@ public:
     void launch();
     void changeCPSelectionMode();
     void displaySelectedPoints();
-    void projectOnMoveDirection(Eigen::Vector3d& projectionReceiver);
+    void projectOnMoveDirection(Eigen::Vector3d &projectionReceiver);
 };

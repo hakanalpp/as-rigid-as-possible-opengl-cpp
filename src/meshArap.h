@@ -15,7 +15,6 @@
 
 using namespace std;
 
-
 struct Vertex
 {
     double *coords, *new_coords, *normals, *target_coords; // 3d coordinates etc
@@ -81,4 +80,3 @@ public:
     void mesh_frame_update();
     void addControlPointsVideo2(vector<int> left_foot_indexes, vector<int> right_foot_indexes, vector<tuple<double, double>> frame_offsets, int frame_number, int is_left);
 };
-

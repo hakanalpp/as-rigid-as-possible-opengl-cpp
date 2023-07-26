@@ -13,11 +13,7 @@ void MeshArap::mesh_frame_update()
 
         for (int j = 0; j < 3; j++)
         {
-            // TODO
             verts[i]->coords[j] = verts[i]->new_coords[j];
-
-            // cout << verts[i]->new_coords[j] << endl;
-            // verts[i]->new_coords[j] = new_deformed_verts(i,j);
         }
     }
 }
@@ -316,8 +312,6 @@ void MeshArap::mesh_vertices_update(Eigen::MatrixXd new_deformed_verts)
 
         for (int j = 0; j < 3; j++)
         {
-            // TODO
-            // verts[i]->coords[j] = verts[i]->new_coords[j];
             verts[i]->new_coords[j] = new_deformed_verts(i, j);
         }
     }
@@ -342,7 +336,6 @@ double MeshArap::compute_energy(vector<Eigen::Matrix3d> rotation_matrices, Eigen
             Eigen::Vector3d p_j = Eigen::Vector3d(verts[j]->coords[0], verts[j]->coords[1], verts[j]->coords[2]);
             Eigen::Vector3d p_j_prime = Eigen::Vector3d(verts[j]->new_coords[0], verts[j]->new_coords[1], verts[j]->new_coords[2]);
 
-            // cout << weight(i,j) <<endl;
             energy += weight(i, j) * pow(((p_i_prime - p_j_prime) - (rotation_matrices[i] * (p_i - p_j))).norm(), 2);
         }
     }
@@ -446,7 +439,6 @@ void MeshArap::addControlPointsVideo2(vector<int> left_foot_indexes, vector<int>
     for (int i = 0; i < right_foot_indexes.size(); i++)
     {
         int current_index = right_foot_indexes[i];
-        // addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1]+get<1>(frame_offsets[frame_number]), verts[current_index]->coords[2]-get<0>(frame_offsets[frame_number]));
 
         if (is_left == 0)
         {
@@ -459,8 +451,5 @@ void MeshArap::addControlPointsVideo2(vector<int> left_foot_indexes, vector<int>
 
         addConstraint(398, 0.019995, 0.348865 + 1, -0.06327);
         addConstraint(746, 0.395689, 0.323604, -0.23446 - 0.3);
-        // cout<<"abc:"<<get<0>(frame_offsets[frame_number])<<endl;
-
-        // addConstraint(current_index, verts[current_index]->coords[0], verts[current_index]->coords[1], verts[current_index]->coords[2]-2);
     }
 }

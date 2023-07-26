@@ -17,5 +17,5 @@ struct ControlPoint
 	Eigen::RowVector3d wantedVertexPosition;
 	SelectionMode type = NONE;
 
-	ControlPoint(int index, Eigen::RowVector3d position, SelectionMode type=NONE) : vertexIndexInMesh(index), wantedVertexPosition(position), type(type) {}
+	ControlPoint(int index, Eigen::RowVector3d position, SelectionMode type = NONE) : vertexIndexInMesh(index), wantedVertexPosition(position), type(type) {}
 };

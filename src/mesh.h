@@ -31,10 +31,9 @@ public:
 
 	Eigen::MatrixXd getVerticesFromIndex(const std::vector<int> &indexes) const;
 	std::vector<int> getControlPoints(SelectionMode selection_mode);
-	ControlPoint* getControlPoint(int vertexIndex);
+	ControlPoint *getControlPoint(int vertexIndex);
 	void filterControlPoints(SelectionMode selection_mode);
 	void moveControlPoints(Eigen::Vector3d moveVector);
 
-    void algorithmToGui(MeshArap meshArap);
-
+	void algorithmToGui(MeshArap meshArap);
 };
